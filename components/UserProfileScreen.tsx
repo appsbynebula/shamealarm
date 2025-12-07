@@ -57,7 +57,7 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ stats, onConnectS
             // Construct the return URL to be /user so they see the connection success immediately
             const returnTo = `${window.location.origin}/user`;
 
-            const { error } = await supabase.auth.signInWithOAuth({
+            const { data, error } = await supabase.auth.linkIdentity({
                 provider: 'twitter',
                 options: {
                     redirectTo: returnTo
@@ -65,6 +65,10 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ stats, onConnectS
             });
 
             if (error) throw error;
+
+            // For linkIdentity, it might redirect immediately, so we might not reach here.
+            // But if it returns data with a url (for manual redirect flow), we might need to handle it.
+            // Usually SDK handles the redirect.
 
         } catch (err: any) {
             console.error("OAuth Error:", err);
@@ -155,8 +159,8 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ stats, onConnectS
                             onClick={handleConnectX}
                             disabled={stats.isConnectedToX || isConnecting}
                             className={`px-3 py-2 text-xs font-bold uppercase tracking-wider rounded border transition-all ${stats.isConnectedToX
-                                    ? 'border-green-500/50 text-green-500 bg-green-500/10 cursor-not-allowed'
-                                    : 'bg-white text-black border-white hover:bg-neutral-200'
+                                ? 'border-green-500/50 text-green-500 bg-green-500/10 cursor-not-allowed'
+                                : 'bg-white text-black border-white hover:bg-neutral-200'
                                 }`}
                         >
                             {isConnecting ? '...' : (stats.isConnectedToX ? 'Locked' : 'Connect')}
