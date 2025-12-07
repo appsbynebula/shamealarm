@@ -19,7 +19,7 @@ const DEFAULT_STATS: UserStats = {
 let currentUserId = 'guest';
 
 export const setUserId = (id: string) => {
-    currentUserId = id;
+  currentUserId = id;
 };
 
 const getStorageKey = () => `${BASE_STORAGE_KEY}${currentUserId}`;
@@ -46,19 +46,22 @@ export const saveStats = (stats: UserStats) => {
 // NEW: Merges Supabase User Identity data with Local Storage
 // This ensures that if the backend knows we are connected to Twitter, the UI reflects it.
 export const syncWithUser = (user: User): UserStats => {
-    const currentStats = getStats();
-    
-    // Check if Twitter is in the linked identities
-    const isTwitterConnected = user.identities?.some(id => id.provider === 'twitter') || false;
-    
-    // Only update if it changed
-    if (isTwitterConnected !== currentStats.isConnectedToX) {
-        const newStats = { ...currentStats, isConnectedToX: isTwitterConnected };
-        saveStats(newStats);
-        return newStats;
-    }
-    
-    return currentStats;
+  const currentStats = getStats();
+
+  // Check if Twitter is in the linked identities OR if it is the main provider
+  const isTwitterConnected =
+    user.identities?.some(id => id.provider === 'twitter')
+    || user.app_metadata?.provider === 'twitter'
+    || false;
+
+  // Only update if it changed
+  if (isTwitterConnected !== currentStats.isConnectedToX) {
+    const newStats = { ...currentStats, isConnectedToX: isTwitterConnected };
+    saveStats(newStats);
+    return newStats;
+  }
+
+  return currentStats;
 };
 
 export const updateProfile = (username: string, avatarUrl: string | null): UserStats => {
@@ -71,18 +74,18 @@ export const updateProfile = (username: string, avatarUrl: string | null): UserS
 export const updateStatsOnSuccess = (minutes: number): UserStats => {
   const stats = getStats();
   const today = new Date().toISOString().split('T')[0];
-  
+
   let newStreak = stats.currentStreak;
-  
+
   if (stats.lastFocusDate !== today) {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayString = yesterday.toISOString().split('T')[0];
-    
+
     if (stats.lastFocusDate === yesterdayString) {
       newStreak += 1;
     } else {
-      newStreak = 1; 
+      newStreak = 1;
     }
   }
 
@@ -92,7 +95,7 @@ export const updateStatsOnSuccess = (minutes: number): UserStats => {
     currentStreak: newStreak,
     lastFocusDate: today
   };
-  
+
   saveStats(newStats);
   return newStats;
 };
@@ -101,7 +104,7 @@ export const updateStatsOnShame = (): UserStats => {
   const stats = getStats();
   const newStats = {
     ...stats,
-    currentStreak: 0, 
+    currentStreak: 0,
     shameCount: stats.shameCount + 1
   };
   saveStats(newStats);
@@ -109,8 +112,8 @@ export const updateStatsOnShame = (): UserStats => {
 };
 
 export const setTwitterConnected = (connected: boolean): UserStats => {
-    const stats = getStats();
-    const newStats = { ...stats, isConnectedToX: connected };
-    saveStats(newStats);
-    return newStats;
+  const stats = getStats();
+  const newStats = { ...stats, isConnectedToX: connected };
+  saveStats(newStats);
+  return newStats;
 };

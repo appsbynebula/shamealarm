@@ -55,6 +55,26 @@ const App: React.FC = () => {
           setPhase(AppPhase.SETUP);
         }
 
+        if (event === 'SIGNED_IN') {
+          // If we are on /dashboard (default) but detecting a fresh login that might be a redirect callback targeting /user,
+          // we can check the URL or just rely on Router. 
+          // However, Supabase sometimes strips the path on redirect if not configured perfectly.
+          // But if passing ?redirect_to=..., it usually works.
+          // Let's force a check: if the stats say connected to X and we are not on /user, maybe nudge? 
+          // No, let's keep it simple.
+          // BUT user said: "redirige al inicio de sesión" (AuthScreen) -> session was null or phase was ONBOARDING.
+          // fix: Ensure phase is set to SETUP immediately.
+
+          if (!phaseRef.current || phaseRef.current === AppPhase.ONBOARDING) {
+            setPhase(AppPhase.SETUP);
+          }
+
+          // Check if URL suggests we should be at /user (e.g. from hash or query)
+          // or simply if we just connected (inferred from stats update)
+          if (window.location.href.includes('/user')) {
+            // The router should handle this, but let's ensure
+          }
+        }
       } else if (event === 'SIGNED_OUT') {
         setPhase(AppPhase.ONBOARDING);
       }

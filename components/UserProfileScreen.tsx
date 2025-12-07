@@ -55,7 +55,9 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ stats, onConnectS
 
         try {
             // Construct the return URL to be /user so they see the connection success immediately
-            const returnTo = `${window.location.origin}/user`;
+            // Ensure no double slashes and correct protocol
+            const origin = window.location.origin.replace(/\/$/, '');
+            const returnTo = `${origin}/user`;
 
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'twitter',
