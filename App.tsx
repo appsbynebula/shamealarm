@@ -7,6 +7,8 @@ import ShameScreen from './components/ShameScreen';
 import UserProfileScreen from './components/UserProfileScreen';
 import AuthScreen from './components/AuthScreen';
 import TabBar from './components/TabBar';
+import PrivacyPolicy from './components/PrivacyPolicy';
+import TermsOfService from './components/TermsOfService';
 import { generateShame } from './services/geminiService';
 import { startAlarm, stopAlarm, playBuffer, getAudioContext, playLoginSound } from './services/audioService';
 import { getStats, updateStatsOnSuccess, updateStatsOnShame, setUserId, syncWithUser } from './services/storageService';
@@ -209,6 +211,8 @@ const App: React.FC = () => {
                   onRefresh={refreshStats}
                 />
               } />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsOfService />} />
               {/* Default Redirect */}
               <Route path="*" element={<Navigate to="/dashboard" replace />} />
             </Routes>

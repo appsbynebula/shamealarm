@@ -1,5 +1,6 @@
 
 import React, { useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { UserStats } from '../types';
 import { updateProfile } from '../services/storageService';
 import { supabase } from '../services/supabaseClient';
@@ -187,7 +188,15 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ stats, onConnectS
                     </div>
                 </div>
             </div>
+
+            {/* Legal Footer */}
+            <div className="pt-8 text-center space-x-4">
+                <Link to="/privacy" className="text-[10px] text-neutral-600 hover:text-neutral-400 uppercase tracking-widest font-bold">Privacy</Link>
+                <span className="text-[10px] text-neutral-800">•</span>
+                <Link to="/terms" className="text-[10px] text-neutral-600 hover:text-neutral-400 uppercase tracking-widest font-bold">Terms</Link>
+            </div>
         </div>
+        </div >
     );
 };
 
