@@ -63,7 +63,10 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ stats, onConnectS
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'twitter',
                 options: {
-                    redirectTo: returnTo
+                    redirectTo: returnTo,
+                    // Note: If we wanted to pass metadata here for a NEW user, we would need 
+                    // a different approach or query params if using a custom callback.
+                    // But since we create the user in AuthScreen, this is fine.
                 }
             });
 

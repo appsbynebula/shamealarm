@@ -19,44 +19,49 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onComplete }) => {
     setLoading(true);
 
     if (!isSupabaseConfigured()) {
-        // MOCK MODE if no keys provided
-        setTimeout(() => {
-            setUserId(email); // Use email as mock ID
-            updateProfile(email.split('@')[0], null);
-            setLoading(false);
-            onComplete();
-        }, 1000);
-        return;
+      // MOCK MODE if no keys provided
+      setTimeout(() => {
+        setUserId(email); // Use email as mock ID
+        updateProfile(email.split('@')[0], null);
+        setLoading(false);
+        onComplete();
+      }, 1000);
+      return;
     }
 
     try {
-        if (isSignUp) {
-            const { data, error } = await supabase.auth.signUp({
-                email,
-                password,
-            });
-            if (error) throw error;
-            if (data.user) {
-                setUserId(data.user.id);
-                updateProfile(email.split('@')[0], null);
-                onComplete();
+      if (isSignUp) {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              app_name: 'shame_alarm'
             }
-        } else {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-            if (error) throw error;
-            if (data.user) {
-                setUserId(data.user.id);
-                // We don't overwrite profile on login, just load stats via ID
-                onComplete();
-            }
+          }
+        });
+        if (error) throw error;
+        if (data.user) {
+          setUserId(data.user.id);
+          updateProfile(email.split('@')[0], null);
+          onComplete();
         }
+      } else {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
+        if (data.user) {
+          setUserId(data.user.id);
+          // We don't overwrite profile on login, just load stats via ID
+          onComplete();
+        }
+      }
     } catch (err: any) {
-        setError(err.message || 'Authentication failed');
+      setError(err.message || 'Authentication failed');
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -64,16 +69,16 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onComplete }) => {
     <div className="flex flex-col h-full w-full bg-black text-white p-8 items-center justify-center animate-fade-in">
       <div className="w-full max-w-sm">
         <h1 className="text-5xl font-black text-yellow-400 mb-2 tracking-tighter leading-none">
-          SHAME<br/>ALARM
+          SHAME<br />ALARM
         </h1>
         <p className="text-neutral-400 mb-8">
-            {isSignUp ? 'Create an account to track your failures.' : 'Login to continue your suffering.'}
+          {isSignUp ? 'Create an account to track your failures.' : 'Login to continue your suffering.'}
         </p>
 
         {error && (
-            <div className="bg-red-500/10 border border-red-500 text-red-500 p-3 rounded mb-4 text-sm font-bold">
-                {error}
-            </div>
+          <div className="bg-red-500/10 border border-red-500 text-red-500 p-3 rounded mb-4 text-sm font-bold">
+            {error}
+          </div>
         )}
 
         <form onSubmit={handleAuth} className="space-y-6">
@@ -112,12 +117,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onComplete }) => {
         </form>
 
         <div className="mt-6 text-center">
-            <button 
-                onClick={() => setIsSignUp(!isSignUp)}
-                className="text-neutral-500 text-sm font-bold hover:text-white underline decoration-neutral-700"
-            >
-                {isSignUp ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
-            </button>
+          <button
+            onClick={() => setIsSignUp(!isSignUp)}
+            className="text-neutral-500 text-sm font-bold hover:text-white underline decoration-neutral-700"
+          >
+            {isSignUp ? 'Already have an account? Login' : "Don't have an account? Sign Up"}
+          </button>
         </div>
       </div>
     </div>
