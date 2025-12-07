@@ -196,7 +196,6 @@ const UserProfileScreen: React.FC<UserProfileScreenProps> = ({ stats, onConnectS
                 <Link to="/terms" className="text-[10px] text-neutral-600 hover:text-neutral-400 uppercase tracking-widest font-bold">Terms</Link>
             </div>
         </div>
-        </div >
     );
 };
 
