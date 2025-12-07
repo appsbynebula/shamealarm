@@ -35,33 +35,24 @@ const App: React.FC = () => {
       return;
     }
 
-    // Auth Listener
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
 
       if (session?.user) {
         setUserId(session.user.id);
 
-        // FIX: Explicitly fetch the user to get the latest identities
-        // The session user object might be stale regarding identities immediately after a link redirect
+        // FIX REGRESSION: Always fetch fresh user, especially on SIGNED_IN
         const { data: { user: fullUser } } = await supabase.auth.getUser();
 
         if (fullUser) {
           const syncedStats = syncWithUser(fullUser);
           setUserStats(syncedStats);
         } else {
-          // Fallback if getUser fails for some reason
           const syncedStats = syncWithUser(session.user);
           setUserStats(syncedStats);
         }
 
-        // Only force phase change if we are in onboarding. 
-        // If the user navigates while in setup, we don't want to reset them.
         if (phaseRef.current === AppPhase.ONBOARDING) {
           setPhase(AppPhase.SETUP);
-        }
-
-        if (event === 'SIGNED_IN' && !phaseRef.current) {
-          // Initial load handling if needed
         }
 
       } else if (event === 'SIGNED_OUT') {
